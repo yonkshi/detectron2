@@ -232,6 +232,7 @@ class Boxes:
 
 # implementation from https://github.com/kuangliu/torchcv/blob/master/torchcv/utils/box.py
 # with slight modifications
+@torch.jit.script
 def pairwise_iou(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
     """
     Given two lists of boxes of size N and M,
@@ -245,10 +246,11 @@ def pairwise_iou(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
     Returns:
         Tensor: IoU, sized [N,M].
     """
-    area1 = boxes1.area()
-    area2 = boxes2.area()
+    original_device = boxes1.device
+    area1 = boxes1.area().cpu()
+    area2 = boxes2.area().cpu()
 
-    boxes1, boxes2 = boxes1.tensor, boxes2.tensor
+    boxes1, boxes2 = boxes1.tensor.cpu(), boxes2.tensor.cpu()
 
     lt = torch.max(boxes1[:, None, :2], boxes2[:, :2])  # [N,M,2]
     rb = torch.min(boxes1[:, None, 2:], boxes2[:, 2:])  # [N,M,2]
@@ -262,7 +264,7 @@ def pairwise_iou(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
         inter / (area1[:, None] + area2 - inter),
         torch.zeros(1, dtype=inter.dtype, device=inter.device),
     )
-    return iou
+    return iou.to(original_device)
 
 
 def matched_boxlist_iou(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
