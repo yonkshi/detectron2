@@ -230,9 +230,47 @@ class Boxes:
         yield from self.tensor
 
 
+def pairwise_iou(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
+    """
+    Given two lists of boxes of size N and M,
+    compute the IoU (intersection over union)
+    between __all__ N x M pairs of boxes.
+    The box order must be (xmin, ymin, xmax, ymax).
+
+    Args:
+        boxes1,boxes2 (Boxes): two `Boxes`. Contains N & M boxes, respectively.
+
+    Returns:
+        Tensor: IoU, sized [N,M].
+    """
+    area2 = boxes2.area()
+
+    boxes1_tensor, boxes2_tensor = boxes1.tensor, boxes2.tensor
+
+    lt = torch.max(boxes1_tensor[:, None, :2], boxes2_tensor[:, :2])  # [N,M,2]
+    rb = torch.min(boxes1_tensor[:, None, 2:], boxes2_tensor[:, 2:])  # [N,M,2]
+
+    N = int(len(boxes1))
+    M = int(len(boxes2))
+    iou = torch.zeros([N,M]).to(boxes1.device)
+
+    for i in range(0, N, 20):
+        area1 = boxes1[i:min(i+20, N)].area()
+
+        wh = (rb[i:min(i+20, N), :] - lt[i:min(i+20, N), :]).clamp(min=0)  # [<=20,M,2]
+        inter = wh[:, :, 0] * wh[:, :, 1]  # [<=20,M]
+
+        # handle empty boxes
+        iou[i:min(i+20, N), :] = torch.where(
+            inter > 0,
+            inter / (area1[:, None] + area2 - inter),
+            torch.zeros(1, dtype=inter.dtype, device=inter.device),
+        )
+    return iou
+
 # implementation from https://github.com/kuangliu/torchcv/blob/master/torchcv/utils/box.py
 # with slight modifications
-def pairwise_iou(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
+def pairwise_iou_backup(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
     """
     Given two lists of boxes of size N and M,
     compute the IoU (intersection over union)
