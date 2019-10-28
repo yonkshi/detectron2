@@ -19,7 +19,7 @@ Unless otherwise noted, the following settings are used for all runs:
   [Detectron1-Comparisons](configs/Detectron1-Comparisons/) for accuracy comparison,
   and [benchmarks](https://detectron2.readthedocs.io/notes/benchmarks.html)
   for speed comparison.
-* Inference speed is measured with batch size 1 in detectron2 directly.
+* Inference speed is measured by `tools/train_net.py --eval-only`, with batch size 1 in detectron2 directly.
   The actual deployment should in general be faster than the given inference
   speed due to more optimizations.
 * Training speed is averaged across the entire training.
@@ -38,7 +38,8 @@ Unless otherwise noted, the following settings are used for all runs:
   Although 1x models are heavily under-trained, we provide some ResNet-50 models with the 1x (~12 COCO epochs)
   training schedule for comparison when doing quick research iteration.
 * The *model id* column is provided for ease of reference.
-  To check downloaded file integrity: any model on this page contains its md5 prefix in its file name.
+  To check downloaded file integrity, any model on this page contains its md5 prefix in its file name.
+	Each model also comes with a metrics file with all the training statistics and evaluation curves.
 
 #### ImageNet Pretrained Models
 
