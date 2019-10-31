@@ -53,7 +53,11 @@ def default_argument_parser():
         argparse.ArgumentParser:
     """
     parser = argparse.ArgumentParser(description="Detectron2 Training")
-    parser.add_argument("--config-file", default="", metavar="FILE", help="path to config file")
+    parser.add_argument('-c',"--config-file", default="", required=True, metavar="FILE", help="path to config file")
+    parser.add_argument('-d', '--data-dir', dest='data_dir', type=str,
+                      default='', help='dataset directory')
+    parser.add_argument('-o', '--log-dir', dest='log_dir', type=str,
+                      default='', help='logging directory')
     parser.add_argument(
         "--resume",
         action="store_true",
@@ -71,6 +75,7 @@ def default_argument_parser():
     # so that users are aware of orphan processes by seeing the port occupied.
     port = 2 ** 15 + 2 ** 14 + hash(os.getuid()) % 2 ** 14
     parser.add_argument("--dist-url", default="tcp://127.0.0.1:{}".format(port))
+
     parser.add_argument(
         "opts",
         help="Modify config options using the command-line",
