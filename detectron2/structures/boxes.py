@@ -237,7 +237,7 @@ class Boxes:
         yield from self.tensor
 
 
-def pairwise_iou__faster(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
+def pairwise_iou(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
     """
     Given two lists of boxes of size N and M,
     compute the IoU (intersection over union)
@@ -277,7 +277,7 @@ def pairwise_iou__faster(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
 
 # implementation from https://github.com/kuangliu/torchcv/blob/master/torchcv/utils/box.py
 # with slight modifications
-def pairwise_iou(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
+def pairwise_iou__slow(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
     """
     Given two lists of boxes of size N and M,
     compute the IoU (intersection over union)
