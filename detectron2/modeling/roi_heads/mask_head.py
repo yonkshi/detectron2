@@ -76,22 +76,17 @@ def mask_rcnn_loss(pred_mask_logits, instances):
     mask_incorrect = (pred_mask_logits > 0.0) != gt_masks_bool
     mask_accuracy = 1 - (mask_incorrect.sum().item() / max(mask_incorrect.numel(), 1.0))
     num_positive = gt_masks_bool.sum().item()
-    true_positive = ((pred_mask_logits > 0.0) & gt_masks_bool).sum().item() / max(num_positive, 1.0)
+
     false_positive = (mask_incorrect & ~gt_masks_bool).sum().item() / max(
         gt_masks_bool.numel() - num_positive, 1.0
     )
     false_negative = (mask_incorrect & gt_masks_bool).sum().item() / max(num_positive, 1.0)
 
-    recall = true_positive / (true_positive + false_negative)
-    precision = true_positive / (true_positive + false_positive)
-    f1 = 2 * precision * recall / (precision + recall)
-
-
     storage = get_event_storage()
     storage.put_scalar("mask_rcnn/accuracy", mask_accuracy)
     storage.put_scalar("mask_rcnn/false_positive", false_positive)
     storage.put_scalar("mask_rcnn/false_negative", false_negative)
-    storage.put_scalar('mask_rcnn/f1', f1)
+
 
     mask_loss = F.binary_cross_entropy_with_logits(
         pred_mask_logits, gt_masks.to(dtype=torch.float32), reduction="mean"
