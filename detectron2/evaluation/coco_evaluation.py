@@ -176,6 +176,8 @@ class COCOEvaluator(DatasetEvaluator):
             return
 
         self._logger.info("Evaluating predictions ...")
+        metrics_file_path = os.path.join(self._output_dir, "metrics")
+        metrics = {}
         for task in sorted(tasks):
             coco_eval = (
                 _evaluate_predictions_on_coco(
@@ -189,6 +191,10 @@ class COCOEvaluator(DatasetEvaluator):
                 coco_eval, task, class_names=self._metadata.get("thing_classes")
             )
             self._results[task] = res
+            metrics[task] = coco_eval.eval['precision']
+        np.save(metrics_file_path, metrics)
+        self._logger.info("Saving PR Metrics")
+
 
     def _eval_box_proposals(self):
         """
@@ -445,7 +451,6 @@ def _evaluate_box_proposals(dataset_predictions, coco_api, thresholds=None, area
         "gt_overlaps": gt_overlaps,
         "num_pos": num_pos,
     }
-
 
 def _evaluate_predictions_on_coco(coco_gt, coco_results, iou_type, kpt_oks_sigmas=None):
     """
