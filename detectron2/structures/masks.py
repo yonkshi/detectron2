@@ -354,7 +354,11 @@ class PolygonMasks:
         """
         Computes area of the mask.
         Only works with Polygons, using the shoelace formula:
+<<<<<<< HEAD
         # https://stackoverflow.com/questions/24467972/calculate-area-of-polygon-given-x-y-coordinates
+=======
+        https://stackoverflow.com/questions/24467972/calculate-area-of-polygon-given-x-y-coordinates
+>>>>>>> 3def12bdeaacd35c6f7b3b6c0097b7bc31f31ba4
 
         Returns:
             Tensor: a vector, area for each instance
@@ -367,6 +371,9 @@ class PolygonMasks:
                 area_per_instance += polygon_area(p[0::2], p[1::2])
             area.append(area_per_instance)
 
+<<<<<<< HEAD
         # TODO: rewrite the helper function in torch when the PolygonMasks are
         # rewritten to use torch
+=======
+>>>>>>> 3def12bdeaacd35c6f7b3b6c0097b7bc31f31ba4
         return torch.tensor(area)
