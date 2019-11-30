@@ -110,9 +110,10 @@ def default_setup(cfg, args):
 
     logger.info("Command line arguments: " + str(args))
     if hasattr(args, "config_file"):
+        file_path = f'tensormask/configs/{args.config_file}.yaml'
         logger.info(
             "Contents of args.config_file={}:\n{}".format(
-                args.config_file, PathManager.open(args.config_file, "r").read()
+                file_path, PathManager.open(file_path, "r").read()
             )
         )
 
